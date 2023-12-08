@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	scraper "github.com/safetyculture/ci-golang/internal/scrape"
+	"github.com/safetyculture/ci-golang/internal/scraper"
 	"github.com/spf13/cobra"
 )
 
