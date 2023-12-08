@@ -2,10 +2,9 @@ package scraper
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
-
-	"github.com/spf13/cobra"
 )
 
 const (
@@ -17,33 +16,28 @@ type Target struct {
 	Url    string
 }
 
-func convertToTarget(inc string) Target {
+func ConvertToTarget(inc string) Target {
 	return Target{
 		Method: strings.Split(inc, TARGET_SEPERATOR)[0],
 		Url:    strings.Join(strings.Split(inc, TARGET_SEPERATOR)[1:], TARGET_SEPERATOR),
 	}
 }
 
-func Scrape(cmd *cobra.Command, args []string) error {
-
-	inc, err := cmd.Flags().GetStringSlice("target")
-
-	if err != nil {
-		return fmt.Errorf("error loading targets, %s", err)
-	}
-
-	targets := []Target{}
-
-	for _, v := range inc {
-		targets = append(targets, convertToTarget(v))
-	}
-
+func Scrape(
+	output io.Writer,
+	targets []Target,
+) error {
 	client := &http.Client{}
 
 	for _, target := range targets {
-		fmt.Printf("Request : %s/%s\n", target.Method, target.Url)
+		fmt.Fprintf(
+			output,
+			"Request : %s|%s\n",
+			target.Method,
+			target.Url,
+		)
 
-		req, err := http.NewRequest(target.Method, target.Url, nil)
+		req, _ := http.NewRequest(target.Method, target.Url, nil)
 		resp, err := client.Do(req)
 
 		if err != nil {
